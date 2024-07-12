@@ -8,6 +8,8 @@ from .models import Record
 def home(request):
     records = Record.objects.all()
 
+    context = {'record': records}
+
     if request.method == 'POST':
         username = request.POST['username']
         password = request.POST['password']
@@ -23,7 +25,7 @@ def home(request):
                              try again...")
             return redirect('home')
     else:
-        return render(request, 'home.html', {'records': records})
+        return render(request, 'home.html', context)
 
 
 def logout_user(request):
@@ -56,8 +58,8 @@ def customer_record(request, pk):
     if request.user.is_authenticated:
         # Look Up Records
         customer_record = Record.objects.get(id=pk)
-        return render(request, 'record.html', {'customer_record':
-                                               customer_record})
+        context = {'customer_record': customer_record}
+        return render(request, 'record.html', context)
     else:
         messages.success(request, "You Must Be Logged In To View That Page...")
         return redirect('home')
@@ -76,13 +78,14 @@ def delete_record(request, pk):
 
 def add_record(request):
     form = AddRecordForm(request.POST or None)
+    context = {'form': form}
     if request.user.is_authenticated:
         if request.method == "POST":
             if form.is_valid():
                 form.save()
                 messages.success(request, "Record Added...")
                 return redirect('home')
-        return render(request, 'add_record.html', {'form': form})
+        return render(request, 'add_record.html', context)
     else:
         messages.success(request, "You Must Be Logged In...")
         return redirect('home')
@@ -92,11 +95,12 @@ def update_record(request, pk):
     if request.user.is_authenticated:
         current_record = Record.objects.get(id=pk)
         form = AddRecordForm(request.POST or None, instance=current_record)
+        context = {'form': form}
         if form.is_valid():
             form.save()
             messages.success(request, "Record Has Been Updated!")
             return redirect('home')
-        return render(request, 'update_record.html', {'form': form})
+        return render(request, 'update_record.html', context)
     else:
         messages.success(request, "You Must Be Logged In...")
         return redirect('home')
