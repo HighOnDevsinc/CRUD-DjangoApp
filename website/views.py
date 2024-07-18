@@ -8,7 +8,7 @@ from .models import Record
 def home(request):
     records = Record.objects.all()
 
-    context = {'record': records}
+    context = {'records': records}
 
     if request.method == 'POST':
         username = request.POST['username']
